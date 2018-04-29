@@ -102,6 +102,11 @@ public class ExampleTests {
     }
 
     @Test
+    public void testCore() throws ParseException {
+        TestUtil.doTestScriptModularly(PATH, "introductory.core", Util.intType(), new IntegerLiteral(3));
+    }
+
+    @Test
     public void testCellClient() throws ParseException {
         TestUtil.doTestScriptModularly(PATH, "modules.cellClient", Util.intType(), new IntegerLiteral(7));
     }
@@ -117,18 +122,13 @@ public class ExampleTests {
     }
 
     @Test
-    public void testOptionParameterized() throws ParseException {
-        TestUtil.doTestScriptModularly(PATH, "introductory.optionP", Util.intType(), new IntegerLiteral(15));
-    }
-
-    @Test
     public void testPalindromeChecker() throws ParseException {
         TestUtil.doTestScriptModularly(PATH, "rosetta.check-palindrome", Util.unitType(), Util.unitValue());
     }
 
     @Test
     public void testListParameterized() throws ParseException {
-        TestUtil.doTestScriptModularly(PATH, "introductory.listP", Util.intType(), new IntegerLiteral(15));
+        TestUtil.doTestScriptModularly(PATH, "introductory.listClient", Util.intType(), new IntegerLiteral(30));
     }
 
     @Test
