@@ -6,7 +6,7 @@ def from(str:String):Int
 	utils.from(str)
 
 def maxValue():Int
-    utils.max_value()
+    utils.maxValue()
 	
 def minValue():Int
-    utils.min_value()
+    utils.minValue()

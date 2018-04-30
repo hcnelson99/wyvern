@@ -1,10 +1,7 @@
 require stdout
 
-import wyvern.collections.list
-import wyvern.Int
+import wyvern.stdlib.wyvern.Int
 
-type List = list.List	
-	
 //find the min of list, add it to new list
 def min():Unit
     val min = Int.maxValue()

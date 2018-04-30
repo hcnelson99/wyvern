@@ -7,11 +7,11 @@ public class Int {
         return Integer.parseInt(s.trim());
     }
 	
-	public int max_value(){
+	public int maxValue(){
 		return Integer.MAX_VALUE;
 	}
 	
-	public int min_value(){
+	public int minValue(){
 		return Integer.MIN_VALUE;
 	}
 }
