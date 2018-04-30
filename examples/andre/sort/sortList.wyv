@@ -1,7 +1,10 @@
 require stdout
+require java
 
-import wyvern.option
+import sorting
 import wyvern.collections.list
+
+
 
 type List = list.List
 
@@ -11,21 +14,24 @@ def printItem(x:Int):Unit
 	stdout.print(" ")
 	
 
-// create list
 val unsortedList:List[Int] = list.make[Int]()
-
-
-//append 5 random
 unsortedList.append(12)
 unsortedList.append(4)
 unsortedList.append(7)
 unsortedList.append(21)
 unsortedList.append(2)
 
-
-//print out list
 stdout.print("Unsorted List: [ ")
 unsortedList.do(x:Int => printItem(x))
 stdout.print("]\n")
+
+sorting.sort(unsortedList)
+
+stdout.print("Sorted List: [ ")
+unsortedList.do(x:Int => printItem(x))
+stdout.print("]\n")
+
+
+
 
 

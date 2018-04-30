@@ -1,5 +1,13 @@
-// define a module or function that takes a list of arguments, and uses bubble sort algorithm to sort the list
-module sorting_alg
+require stdout
 
-def sort(list: List[T]): List[T]
-	
+
+def merge(a:Int,b:Int):Int
+    if (a > b)
+        stdout.printInt(a)
+        stdout.print("a > b")
+        a
+      else
+	    stdout.print("b > a")
+        b
+			
+merge(6,2)
