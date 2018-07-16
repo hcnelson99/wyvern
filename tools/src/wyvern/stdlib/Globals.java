@@ -51,10 +51,13 @@ public final class Globals {
     public static final boolean checkRuntimeTypes = false;
     private static final Set<String> javaWhiteList = new HashSet<String>();
     private static final Set<String> javascriptWhiteList = new HashSet<String>();
-    private static final String PRELUDE_NAME = "prelude.wyv";
+    private static final String PRELUDE_TSL_WYV = "preludeTSL.wyv";
+    private static final String RUNTIME_PRELUDE_WYV = "preludeRT.wyv";
     private static final BindingSite system = new BindingSite("system");
-    private static SeqExpr prelude = null;
-    private static Module preludeModule = null;
+    private static SeqExpr preludeTSL = null;
+    private static Module preludeTSLModule = null;
+    private static SeqExpr runtimePrelude = null;
+    private static Module runtimePreludeModule = null;
 
     static {
         // the whitelist that anyone can import without requiring java or becoming a resource module
@@ -77,49 +80,89 @@ public final class Globals {
         javascriptWhiteList.add("stdlib.support.float");
     }
 
-    private static boolean gettingPrelude = false;
+    private static boolean gettingPreludeTSL = false;
+    private static boolean gettingRuntimePrelude = false;
     private static boolean usePrelude = true;
 
-    /** Allows us to disable the prelude for testing purposes if necessary */
+    /** Allows us to disable the preludeTSL for testing purposes if necessary */
     public static void setUsePrelude(boolean update) {
         usePrelude = update;
     }
 
-    public static void resetPrelude() {
-        prelude = null;
-        gettingPrelude = false;
+    private static void addSystemBinding(SeqExpr e) {
+        e.addBinding(new BindingSite("system"), Globals.getSystemType(), Globals.getSystemValue(), false);
     }
 
-    public static Module getPreludeModule() {
+    public static void resetRuntimePrelude() {
+        runtimePrelude = null;
+        gettingRuntimePrelude = false;
+    }
+
+    public static Module getRuntimePreludeModule() {
         if (!usePrelude) {
-            throw new RuntimeException("may not call getPreludeModule if preludes are disabled");
+            throw new RuntimeException("may not call getRuntimePreludeModule if preludes are disabled");
         }
-        if (prelude == null) {
-            getPrelude();
+        if (runtimePrelude == null) {
+            getRuntimePrelude();
         }
-        return preludeModule;
+        return runtimePreludeModule;
     }
 
-    private static SeqExpr getPrelude() {
+    private static SeqExpr getRuntimePrelude() {
         if (!usePrelude) {
             SeqExpr result = new SeqExpr();
-            result.addBinding(new BindingSite("system"), Globals.getSystemType(), Globals.getSystemValue(), false);
+            addSystemBinding(result);
             return result;
         }
-        if (prelude == null) {
-            if (gettingPrelude) {
+        if (runtimePrelude == null) {
+            if (gettingRuntimePrelude) {
                 return new SeqExpr();
             }
-            gettingPrelude = true;
-            String preludeLocation = TestUtil.LIB_PATH + PRELUDE_NAME;
-            File file = new File(preludeLocation);
+            gettingRuntimePrelude = true;
 
-            preludeModule = ModuleResolver.getLocal().load("<prelude>", file, true);
-            prelude = ModuleResolver.getLocal().wrap(preludeModule.getExpression(), preludeModule.getDependencies());
-            TailCallVisitor.annotate(prelude);
-            prelude.addBinding(new BindingSite("system"), Globals.getSystemType(), Globals.getSystemValue(), false);
+            File file = new File(TestUtil.LIB_PATH + RUNTIME_PRELUDE_WYV);
+            runtimePreludeModule = ModuleResolver.getLocal().load("<runtimePrelude>", file, true);
+            runtimePrelude = ModuleResolver.getLocal().wrap(runtimePreludeModule.getExpression(), runtimePreludeModule.getDependencies());
+            TailCallVisitor.annotate(runtimePrelude);
+            addSystemBinding(runtimePrelude);
+
         }
-        return prelude;
+        return runtimePrelude;
+    }
+
+    public static void resetPreludeTSL() {
+        preludeTSL = null;
+        gettingPreludeTSL = false;
+    }
+
+    public static Module getPreludeTSLModule() {
+        if (!usePrelude) {
+            throw new RuntimeException("may not call getPreludeTSLModule if preludes are disabled");
+        }
+        if (preludeTSL == null) {
+            getPreludeTSL();
+        }
+        return preludeTSLModule;
+    }
+
+    private static SeqExpr getPreludeTSL() {
+        if (!usePrelude) {
+            SeqExpr result = new SeqExpr();
+            addSystemBinding(result);
+            return result;
+        }
+        if (preludeTSL == null) {
+            if (gettingPreludeTSL) {
+                return new SeqExpr();
+            }
+            gettingPreludeTSL = true;
+            File file = new File(TestUtil.LIB_PATH + PRELUDE_TSL_WYV);
+            preludeTSLModule = ModuleResolver.getLocal().load("<preludeTSL>", file, true);
+            preludeTSL = ModuleResolver.getLocal().wrap(preludeTSLModule.getExpression(), preludeTSLModule.getDependencies());
+            TailCallVisitor.annotate(preludeTSL);
+            addSystemBinding(preludeTSL);
+        }
+        return preludeTSL;
     }
 
     public static boolean checkSafeJavaImport(String packageName) {
@@ -154,7 +197,7 @@ public final class Globals {
         genCtx = new TypeOrEffectGenContext("Platform", system, genCtx);
         genCtx = new VarGenContext(new BindingSite("unit"), Util.unitValue(), Util.unitType(), genCtx);
         genCtx = GenUtil.ensureJavaTypesPresent(genCtx);
-        SeqExpr sexpr = getPrelude();
+        SeqExpr sexpr = getPreludeTSL();
         GenContext newCtx = sexpr.extendContext(genCtx);
         return newCtx;
     }
@@ -253,14 +296,14 @@ public final class Globals {
         GenContext ctx = GenContext.empty();
         ctx = ctx.extend(system, new Variable(system), getSystemType());
         ctx = GenUtil.ensureJavaTypesPresent(ctx);
-        SeqExpr sexpr = getPrelude();
+        SeqExpr sexpr = getPreludeTSL();
         GenContext newCtx = sexpr.extendContext(ctx);
         return newCtx;
     }
 
     public static EvalContext getStandardEvalContext() {
         EvalContext ctx = EvalContext.empty();
-        SeqExpr sexpr = prelude;
+        SeqExpr sexpr = preludeTSL;
         if (sexpr != null) {
             ctx = sexpr.interpretCtx(ctx).getSecond();
         }

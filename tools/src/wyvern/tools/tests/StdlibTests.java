@@ -17,7 +17,7 @@ import wyvern.tools.errors.ToolError;
 public class StdlibTests {
     @Before
     public void setup() {
-        Globals.resetPrelude();
+        Globals.resetPreludeTSL();
     }
     @Test
     public void testRegex() throws ParseException {

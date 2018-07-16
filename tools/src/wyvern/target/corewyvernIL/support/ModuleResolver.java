@@ -389,7 +389,7 @@ public class ModuleResolver {
     }
 
     public SeqExpr buildPreludedExpression(Expression expression) {
-        Module prelude = Globals.getPreludeModule();
+        Module prelude = Globals.getRuntimePreludeModule();
         SeqExpr expr = new SeqExpr();
         expr.addBinding(new BindingSite("system"), Globals.getSystemType(), Globals.getSystemValue(), false);
         expr.merge(prelude.getExpression());
@@ -409,7 +409,7 @@ public class ModuleResolver {
 
         wyb.addModules(BytecodeOuterClass.Module.newBuilder().setPath("toplevel").setValueModule(v));
 
-        Module prelude = Globals.getPreludeModule();
+        Module prelude = Globals.getRuntimePreludeModule();
         dependencies.addAll(prelude.getDependencies());
         List<TypedModuleSpec> noDups = sortDependencies(dependencies);
         for (TypedModuleSpec spec : noDups) {
@@ -494,7 +494,7 @@ public class ModuleResolver {
         SeqExpr seqProg = new SeqExpr();
         List<TypedModuleSpec> deps = new ArrayList<TypedModuleSpec>(dependencies);
 
-        Module prelude = Globals.getPreludeModule();
+        Module prelude = Globals.getRuntimePreludeModule();
         addDeps(seqProg, prelude.getDependencies());
         seqProg.merge(prelude.getExpression());
         deps.removeAll(prelude.getDependencies());

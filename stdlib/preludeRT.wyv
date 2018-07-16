@@ -1,0 +1,17 @@
+import wyvern.runtime
+
+resource type Blocks
+  def evalTrue() : Dyn
+  def evalFalse() : Dyn
+
+resource type FnExpr
+  def apply() : Dyn
+
+def doif(condition : Boolean, tt:FnExpr, ff:FnExpr) : Dyn
+  condition.ifTrue(() => tt.apply(), () => ff.apply())
+
+def doifblk(condition : Boolean, block:Blocks) : Dyn
+  condition.ifTrue(() => block.evalTrue(), () => block.evalFalse())
+
+val ifelseARG = (cond:Boolean, tt:IfTSL.FnExpr, ff:IfTSL.FnExpr) => doif(cond, tt, ff)
+val if = (cond:Boolean, blocks:IfTSL.Blocks) => doifblk(cond, blocks)

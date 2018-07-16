@@ -67,13 +67,8 @@ public final class BytecodeCompiler {
                 wyb.writeTo(new FileOutputStream(outputFile));
             } catch (IOException e1) {
                 e1.printStackTrace();
+                System.exit(1);
             }
-
-
-            // Do we need this for bytecode generation?
-            // program = state.getResolver().wrap(program, m.getDependencies());
-            // program = (IExpr) PlatformSpecializationVisitor.specializeAST((ASTNode) program, "java", Globals.getGenContext(state));
-
         } catch (ToolError e) {
             System.err.println(e.getMessage());
             System.exit(1);
